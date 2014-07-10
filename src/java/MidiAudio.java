@@ -22,6 +22,10 @@ public class MidiAudio {
         }
     }
 
+    public Sequence getSequence() {
+        return sequence;
+    }
+
     // Play the midi audio
     public void play() {
             pr = new PlayRunnable(sequence);
@@ -72,6 +76,11 @@ public class MidiAudio {
         public void kill() {
             running = false;
         }
+    }
+
+    public static void main(String[] args) {
+        MidiAudio midi = new MidiAudio("lib/music_examples/short_sample_1.mid");
+        midi.play();
     }
 
 }
