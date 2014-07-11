@@ -30,15 +30,16 @@ public class MidiParser {
      *      0. track number
      *      1. channel number
      *      2. note number
-     *      3. velocity
-     *      4. start time (tick)
-     *      5. end time (tick)
-     *      6. event index of note_on
-     *      7. event index of note_off
+     *      3. note_on velocity
+     *      4. note_on time (tick)
+     *      5. note_off time (tick)
+     *      6. note_on event index
+     *      7. note_off event index
      * @return matrix of note on/off data for MIDI sequence.
      */
 
     public ArrayList<double[]> getNotes() {
+        int vectorSize = 8;
 
         // get tracks from sequence
         Track[] tracks = sequence.getTracks();
@@ -58,7 +59,7 @@ public class MidiParser {
                 if (isControlEvent(midiEvent = track.get(j)) &&
                         isNoteMessage(shortMessage = (ShortMessage) midiEvent.getMessage())) {
 
-                    double[] note = new double[8];
+                    double[] note = new double[vectorSize];
 
                     // 0. Track Number
                     note[0] = i+1;
@@ -66,29 +67,42 @@ public class MidiParser {
                     note[1] = shortMessage.getChannel();
                     // 2. Note number
                     note[2] = shortMessage.getData1();
-                    // 3. Velocity
-                    note[3] = shortMessage.getData2();
-                    // 4. Start time
+
+                    // if NOTE_ON
                     if (isNoteOnMessage(shortMessage)) {
+
+                        // 3. note_on velocity
+                        note[3] = shortMessage.getData2();
+                        // 4. note_on time
                         note[4] = midiEvent.getTick();
-                    // 5. End time;
+                        // 6. note_on event index
+                        note[6] = j;
+
+                        // add new event to track
+                        curTrackNoteData.add(note);
+
+                    // if NOTE_OFF
                     } else if (isNoteOffMessage(shortMessage)) {
+
                         // look back until reaching the identical note_on event on the same channel
+                        int index = 0;
                         for (int k = curTrackNoteData.size() - 1; k >= 0; k--) {
                             double[] tempNote = curTrackNoteData.get(k);
-                            if (tempNote[2] == note[2] && tempNote[1] == note[1]) {
-                                note[5] = midiEvent.getTick();
+                            if (tempNote[2] == note[2]) {
+                                note = tempNote;
+                                index = k;
                                 break;
                             }
                         }
-                    }
-                    // 6. Event index of start time
-                    note[6] = j;
-                    // 7. Event index of start time
-                    note[7] = j;
 
-                    // store track
-                    curTrackNoteData.add(note);
+                        // 5. note_off time;
+                        note[5] = midiEvent.getTick();
+                        // 7. note_off event index
+                        note[7] = j;
+
+                        // update note_on event
+                        curTrackNoteData.set(index, note);
+                    }
                 }
             }
             noteData.addAll(curTrackNoteData);
@@ -97,15 +111,16 @@ public class MidiParser {
     }
 
     private boolean isNoteMessage(ShortMessage shortMessage) {
-        return shortMessage.getCommand() == ShortMessage.NOTE_OFF ||
-                shortMessage.getCommand() == ShortMessage.NOTE_ON;
+        return isNoteOffMessage(shortMessage) || isNoteOnMessage(shortMessage);
     }
 
     private boolean isNoteOnMessage(ShortMessage shortMessage) {
-        return shortMessage.getCommand() == ShortMessage.NOTE_ON;
+        return shortMessage.getCommand() == ShortMessage.NOTE_ON && shortMessage.getData2() > 0;
     }
     private boolean isNoteOffMessage(ShortMessage shortMessage) {
-        return shortMessage.getCommand() == ShortMessage.NOTE_OFF;
+        return shortMessage.getCommand() == ShortMessage.NOTE_OFF ||
+                (shortMessage.getCommand() == ShortMessage.NOTE_ON &&
+                        shortMessage.getData2() == 0);
     }
 
 }

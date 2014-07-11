@@ -20,9 +20,17 @@ public class MidiAudio {
         return sequence;
     }
 
-    public ArrayList<double[]> getNotesMatrix() {
+    public double[][] getNotesMatrix() {
         MidiParser midiParser = new MidiParser(sequence);
-        return midiParser.getNotes();
+        ArrayList<double[]> noteData = midiParser.getNotes();
+
+        // convert to double[][] for easier matlab integration :(
+        double[][] noteMatrixData = new double[noteData.size()][noteData.get(0).length];
+        for (int i = 0; i < noteData.size(); i++)
+            for (int j = 0; j < noteData.get(i).length; j++)
+                noteMatrixData[i][j] = noteData.get(i)[j];
+
+        return noteMatrixData;
     }
 
     // Play the midi audio on MIDI compatible speakers
@@ -82,6 +90,7 @@ public class MidiAudio {
     public static void main(String[] args) {
         MidiAudio midi = new MidiAudio("lib/music_examples/short_sample_1.mid");
         midi.play();
+        midi.getNotesMatrix();
     }
 
 }
