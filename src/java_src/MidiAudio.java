@@ -1,22 +1,18 @@
+package java_src;
 
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.*;
 import java.lang.Exception;
-import javax.sound.midi.Sequencer;
-import javax.sound.midi.Sequence;
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 
 public class MidiAudio {
 
-    private File songpath;
     private Sequence sequence;
     private PlayRunnable pr;
 
     public MidiAudio(String path) {
-        songpath = new File(path);
         try {
-            sequence = MidiSystem.getSequence(songpath);
+            sequence = MidiSystem.getSequence(new File(path));
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -26,18 +22,24 @@ public class MidiAudio {
         return sequence;
     }
 
-    // Play the midi audio
+    public ArrayList<double[]> getNotesMatrix() {
+        MidiParser midiParser = new MidiParser(sequence);
+        return midiParser.getNotes();
+    }
+
+    // Play the midi audio on MIDI compatible speakers
     public void play() {
             pr = new PlayRunnable(sequence);
             Thread th = new Thread(pr);
             th.start();
     }
 
-    // Stop the midi audio
+    // Stop the midi audio (assumed that the audio is already playing)
     public void stop() {
         pr.kill();
     }
 
+    // Separate thread to play the audio
     public class PlayRunnable implements Runnable {
 
         private volatile boolean running;
@@ -76,6 +78,7 @@ public class MidiAudio {
         public void kill() {
             running = false;
         }
+
     }
 
     public static void main(String[] args) {
