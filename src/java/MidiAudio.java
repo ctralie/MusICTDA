@@ -1,5 +1,3 @@
-package java_src;
-
 import javax.sound.midi.*;
 import java.lang.Exception;
 import java.io.File;
