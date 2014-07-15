@@ -13,17 +13,24 @@ In matlab, run setup to add necessary files to path.
 
 Run the following commands to play a midi file.
 
-    midiaudio = loadmidi('lib/music_examples/short_sample_1.mid');
-	midiaudio.play();
+    midimain = loadmidi('lib/music_examples/short_sample_3.mid');
+    midiplayer = midimain.getMidiPlayer;
+	midiplayer.play;
 
 To stop the audio anytime:
 
-    midiaudio.stop();
+    midiplayer.stop;
 
 To get note information from the piece:
 
-    noteMatrix = midiaudio.getNoteMatrix;
+    midiparser = midimain.getMidiParser;
+    noteMatrix = midiparser.getNoteMatrix;
 
 To generate transition matrix for a first order Markov Chains of Notes:
 
-    transitionMatrix = midiaudio.getFirstOrderMarkovTransitionMatrix;
+    midimarkov = midimain.getMidi2Markov;
+    transitionMatrix1 = midimarkov.getTransitionMatrix(1);
+
+To generate transition matrix for a second order Markov Chain of Notes:
+
+    transitionMatrix2 = midimarkov.getTransitionMatrix(2);

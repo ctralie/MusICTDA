@@ -59,9 +59,9 @@ public class Note implements Comparable<Note> {
 
     @Override
     public int compareTo(Note o) {
-        if (this.noteOnIndex < o.noteOnIndex)
+        if (this.noteOnTime < o.noteOnTime)
             return -1;
-        else if (this.noteOnIndex > o.noteOnIndex)
+        else if (this.noteOnTime > o.noteOnTime)
             return 1;
         else
             return 0;

@@ -157,6 +157,19 @@ public class MidiParser {
         return noteData;
     }
 
+    // Return a matrix of note information, primary for matlab matrix manipulations
+    public long[][] getNoteMatrix() {
+        ArrayList<Note> noteData = getNoteSequence();
+
+        // convert to double[][] for easier matlab integration :(
+        long[][] noteMatrix = new long[noteData.size()][noteData.get(0).getNoteVector().length];
+        for (int i = 0; i < noteData.size(); i++) {
+            long[] noteVector = noteData.get(i).getNoteVector();
+            System.arraycopy(noteVector, 0, noteMatrix[i], 0, noteVector.length);
+        }
+        return noteMatrix;
+    }
+
     private boolean isMetaEvent(MidiEvent event) {
         return (event.getMessage().getStatus() == MetaMessage.META);
     }
