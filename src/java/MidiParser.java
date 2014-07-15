@@ -62,6 +62,10 @@ public class MidiParser {
         return timeSignature;
     }
 
+    public Sequence getSequence() {
+        return sequence;
+    }
+
     /**
      *  Outputs all the midi events into a Nx8 matrix such that the structure is:
      *      0. track number
@@ -75,7 +79,8 @@ public class MidiParser {
      * @return matrix of note on/off data for MIDI sequence.
      */
     public ArrayList<double[]> getNotes() {
-        int vectorSize = 8;
+        final int vectorSize = 8;
+        final int noteOnIndex = 4;
 
         // get tracks from sequence
         Track[] tracks = sequence.getTracks();
@@ -147,9 +152,9 @@ public class MidiParser {
 
             @Override
             public int compare(double[] o1, double[] o2) {
-                if (o1[4] < o2[4])
+                if (o1[noteOnIndex] < o2[noteOnIndex])
                     return -1;
-                else if (o1[4] > o2[4])
+                else if (o1[noteOnIndex] > o2[noteOnIndex])
                     return 1;
                 else
                     return 0;
