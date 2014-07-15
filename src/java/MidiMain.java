@@ -27,6 +27,18 @@ public class MidiMain {
         return sequence;
     }
 
+    // return transition matrix of 1st order markov chain
+    public double[][] getFirstOrderMarkovTransitionMatrix() {
+        Midi2Markov midi2Markov = new Midi2Markov(midiParser.getNoteSequence());
+        return midi2Markov.getFirstOrderTransitionMatrix();
+    }
+
+    // return transition matrix of 2nd order markov chain
+    public double[][] getSecondOrderMarkovTransitionMatrix() {
+        Midi2Markov midi2Markov = new Midi2Markov(midiParser.getNoteSequence());
+        return midi2Markov.getSecondOrderTransitionMatrix();
+    }
+
     // Return an ArrayList of ordered Notes
     public ArrayList<Note> getNoteSequence() {
         return midiParser.getNoteSequence();
@@ -59,6 +71,13 @@ public class MidiMain {
     public static void main(String[] args) {
         MidiMain midi = new MidiMain("lib/music_examples/short_sample_1.mid");
         midi.getNoteMatrix();
+        double[][] firstMatrix = midi.getFirstOrderMarkovTransitionMatrix();
+//        double[][] secondMatrix = midi.getSecondOrderMarkovTransitionMatrix();
+        for (int i = 0; i < firstMatrix.length; i++) {
+            for (int j = 0; j < firstMatrix[0].length; j++) {
+                System.out.print(firstMatrix[i][j] + " ");
+            }
+        }
         midi.play();
     }
 

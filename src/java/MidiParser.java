@@ -37,7 +37,6 @@ public class MidiParser {
                         byte[] bytes = metaMessage.getData();
                         int data = (bytes[0] & 0xff) << 16 | (bytes[1] & 0xff) << 8 | (bytes[2] & 0xff);
                         BPM = 6e7 / data;
-                        System.out.println(BPM);
                         bpmfound = true;
                     }
                     if (isTimeSigMessage(metaMessage = (MetaMessage) midiEvent.getMessage())) {
