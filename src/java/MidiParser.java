@@ -1,5 +1,8 @@
 import javax.sound.midi.*;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Midi Parser. Only parses format 0 and 1 MIDI files.
@@ -8,21 +11,55 @@ import java.util.ArrayList;
 public class MidiParser {
 
     private Sequence sequence;
+    private int PPQN;
+    private double BPM;
+    private int[] timeSignature;
 
     public MidiParser(Sequence seq) {
+
+        // get sequence
         sequence = seq;
+
+        // get Pulses Per Quarter Note (PPQN)
+        PPQN = sequence.getResolution();
+
+        // Parse all MIDI events
+        MidiEvent midiEvent;
+        MetaMessage metaMessage;
+        boolean bpmfound = false;
+        boolean timesigfound = false;
+        Track[] tracks = sequence.getTracks();
+        outerLoop:
+        for (Track track: tracks) {
+            for (int j = 0; j < track.size(); j++) {
+                if (isMetaEvent(midiEvent = track.get(j))) {
+                    if (isTempoMessage(metaMessage = (MetaMessage) midiEvent.getMessage())) {
+                        ByteBuffer wrapped = ByteBuffer.wrap(metaMessage.getData());
+                        BPM = 6e7 / wrapped.getInt();
+                        bpmfound = true;
+                    }
+                    if (isTimeSigMessage(metaMessage = (MetaMessage) midiEvent.getMessage())) {
+                        byte[] data = metaMessage.getData();
+                        timeSignature = new int[] { (int) data[1], (int) data[2] };
+                        timesigfound = true;
+                    }
+                }
+                if (bpmfound && timesigfound)
+                    break outerLoop;
+            }
+        }
     }
 
-    private boolean isMetaEvent(MidiEvent event) {
-        return (event.getMessage().getStatus() == MetaMessage.META);
+    public int getPPQN() {
+        return PPQN;
     }
 
-    private boolean isSysExEvent(MidiEvent event) {
-        return (event.getMessage().getStatus() == SysexMessage.SYSTEM_EXCLUSIVE);
+    public double getBPM() {
+        return BPM;
     }
 
-    private boolean isControlEvent(MidiEvent event) {
-        return (!isMetaEvent(event) && !isSysExEvent(event));
+    public int[] getTimeSignature() {
+        return timeSignature;
     }
 
     /**
@@ -37,7 +74,6 @@ public class MidiParser {
      *      7. note_off event index
      * @return matrix of note on/off data for MIDI sequence.
      */
-
     public ArrayList<double[]> getNotes() {
         int vectorSize = 8;
 
@@ -107,7 +143,39 @@ public class MidiParser {
             }
             noteData.addAll(curTrackNoteData);
         }
+        Collections.sort(noteData, new Comparator<double[]>() {
+
+            @Override
+            public int compare(double[] o1, double[] o2) {
+                if (o1[4] < o2[4])
+                    return -1;
+                else if (o1[4] > o2[4])
+                    return 1;
+                else
+                    return 0;
+            }
+        });
         return noteData;
+    }
+
+    private boolean isMetaEvent(MidiEvent event) {
+        return (event.getMessage().getStatus() == MetaMessage.META);
+    }
+
+    private boolean isSysExEvent(MidiEvent event) {
+        return (event.getMessage().getStatus() == SysexMessage.SYSTEM_EXCLUSIVE);
+    }
+
+    private boolean isControlEvent(MidiEvent event) {
+        return (!isMetaEvent(event) && !isSysExEvent(event));
+    }
+
+    private boolean isTimeSigMessage(MetaMessage metaMessage) {
+        return metaMessage.getType() == 88;
+    }
+
+    private boolean isTempoMessage(MetaMessage metaMessage) {
+        return metaMessage.getType() == 81;
     }
 
     private boolean isNoteMessage(ShortMessage shortMessage) {
