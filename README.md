@@ -19,3 +19,11 @@ Run the following commands to play a midi file.
 To stop the audio anytime:
 
     midiaudio.stop();
+
+To get note information from the piece:
+
+    noteMatrix = midiaudio.getNoteMatrix;
+
+To generate transition matrix for a first order Markov Chains of Notes:
+
+    transitionMatrix = midiaudio.getFirstOrderMarkovTransitionMatrix;
