@@ -1,43 +1,49 @@
-import javax.sound.midi.*;
-import java.lang.Exception;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.Sequencer;
 import java.io.File;
-import java.util.ArrayList;
 
-public class MidiAudio {
+/**
+ * Custom Midi audio player
+ */
 
+public class MidiPlayer {
+
+    private static MidiPlayer midiPlayer;
     private Sequence sequence;
     private PlayRunnable pr;
 
-    public MidiAudio(String path) {
+    // Ensures only ONE MidiPlayer object
+    public MidiPlayer() {}
+    public static MidiPlayer getMidiPlayerInstance(Sequence seq) {
+        if (null == midiPlayer) {
+            midiPlayer = new MidiPlayer();
+            midiPlayer.setSequence(seq);
+        }
+        return midiPlayer;
+    }
+    public static MidiPlayer getMidiPlayerInstance(String path) {
         try {
-            sequence = MidiSystem.getSequence(new File(path));
+            Sequence seq = MidiSystem.getSequence(new File(path));
+            return getMidiPlayerInstance(seq);
         } catch (Exception e) {
             System.out.println(e.toString());
+            return null;
         }
     }
 
-    public Sequence getSequence() {
-        return sequence;
-    }
-
-    public double[][] getNotesMatrix() {
-        MidiParser midiParser = new MidiParser(sequence);
-        ArrayList<double[]> noteData = midiParser.getNotes();
-
-        // convert to double[][] for easier matlab integration :(
-        double[][] noteMatrixData = new double[noteData.size()][noteData.get(0).length];
-        for (int i = 0; i < noteData.size(); i++)
-            for (int j = 0; j < noteData.get(i).length; j++)
-                noteMatrixData[i][j] = noteData.get(i)[j];
-
-        return noteMatrixData;
+    private void setSequence(Sequence seq) {
+        this.sequence = seq;
     }
 
     // Play the midi audio on MIDI compatible speakers
     public void play() {
-            pr = new PlayRunnable(sequence);
-            Thread th = new Thread(pr);
-            th.start();
+        if (null != pr && pr.isRunning()) {
+            pr.kill();
+        }
+        pr = new PlayRunnable(sequence);
+        Thread th = new Thread(pr);
+        th.start();
     }
 
     // Stop the midi audio (assumed that the audio is already playing)
@@ -62,11 +68,11 @@ public class MidiAudio {
                 player.setSequence(seq);
                 player.open();
                 player.start();
-                while(running) {
-                    if(player.isRunning()) {
+                while (running) {
+                    if (player.isRunning()) {
                         try {
                             Thread.sleep(1000); // Check every second
-                        } catch(InterruptedException ignore) {
+                        } catch (InterruptedException ignore) {
                             break;
                         }
                     } else {
@@ -76,7 +82,7 @@ public class MidiAudio {
                 // Close resources
                 player.stop();
                 player.close();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 System.out.println(e.toString());
             }
         }
@@ -85,12 +91,14 @@ public class MidiAudio {
             running = false;
         }
 
+        public boolean isRunning() {
+            return running;
+        }
     }
 
     public static void main(String[] args) {
-        MidiAudio midi = new MidiAudio("lib/music_examples/short_sample_1.mid");
-        midi.play();
-        midi.getNotesMatrix();
+        MidiPlayer mp = MidiPlayer.getMidiPlayerInstance("lib/music_examples/short_sample_1.mid");
+        mp.play();
     }
 
 }

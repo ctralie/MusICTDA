@@ -34,8 +34,10 @@ public class MidiParser {
             for (int j = 0; j < track.size(); j++) {
                 if (isMetaEvent(midiEvent = track.get(j))) {
                     if (isTempoMessage(metaMessage = (MetaMessage) midiEvent.getMessage())) {
-                        ByteBuffer wrapped = ByteBuffer.wrap(metaMessage.getData());
-                        BPM = 6e7 / wrapped.getInt();
+                        byte[] bytes = metaMessage.getData();
+                        int data = (bytes[0] & 0xff) << 16 | (bytes[1] & 0xff) << 8 | (bytes[2] & 0xff);
+                        BPM = 6e7 / data;
+                        System.out.println(BPM);
                         bpmfound = true;
                     }
                     if (isTimeSigMessage(metaMessage = (MetaMessage) midiEvent.getMessage())) {
@@ -78,29 +80,28 @@ public class MidiParser {
      *      7. note_off event index
      * @return matrix of note on/off data for MIDI sequence.
      */
-    public ArrayList<double[]> getNotes() {
+    public ArrayList<Note> getNoteSequence() {
         final int vectorSize = 8;
-        final int noteOnIndex = 4;
 
         // get tracks from sequence
         Track[] tracks = sequence.getTracks();
 
         // initialize note info data structure
-        ArrayList<double[]> noteData = new ArrayList<double[]>();
+        ArrayList<Note> noteData = new ArrayList<Note>();
 
         // iterate through each track, retrieve all notes
         MidiEvent midiEvent;
         ShortMessage shortMessage;
         for (int i = 0; i < tracks.length; i++) {
             Track track = tracks[i];
-            ArrayList<double[]> curTrackNoteData = new ArrayList<double[]>(track.size());
+            ArrayList<long[]> curTrackNoteData = new ArrayList<long[]>(track.size());
             for (int j = 0; j < track.size(); j++) {
 
                 // check if a control event and a note message (note_on/note_off)
                 if (isControlEvent(midiEvent = track.get(j)) &&
                         isNoteMessage(shortMessage = (ShortMessage) midiEvent.getMessage())) {
 
-                    double[] note = new double[vectorSize];
+                    long[] note = new long[vectorSize];
 
                     // 0. Track Number
                     note[0] = i+1;
@@ -128,7 +129,7 @@ public class MidiParser {
                         // look back until reaching the identical note_on event on the same channel
                         int index = 0;
                         for (int k = curTrackNoteData.size() - 1; k >= 0; k--) {
-                            double[] tempNote = curTrackNoteData.get(k);
+                            long[] tempNote = curTrackNoteData.get(k);
                             if (tempNote[2] == note[2]) {
                                 note = tempNote;
                                 index = k;
@@ -146,20 +147,14 @@ public class MidiParser {
                     }
                 }
             }
-            noteData.addAll(curTrackNoteData);
-        }
-        Collections.sort(noteData, new Comparator<double[]>() {
-
-            @Override
-            public int compare(double[] o1, double[] o2) {
-                if (o1[noteOnIndex] < o2[noteOnIndex])
-                    return -1;
-                else if (o1[noteOnIndex] > o2[noteOnIndex])
-                    return 1;
-                else
-                    return 0;
+            // Create note object and add to noteData
+            for (long[] nV: curTrackNoteData) {
+                Note note = new Note((int)nV[0], (int)nV[1], (int)nV[2], (int)nV[3],
+                        nV[4], nV[5], (int)nV[6], (int)nV[7], PPQN);
+                noteData.add(note);
             }
-        });
+        }
+        Collections.sort(noteData);
         return noteData;
     }
 

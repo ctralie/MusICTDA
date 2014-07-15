@@ -1,10 +1,21 @@
+/**
+ * Note object class, encapsulates a Note message.
+ */
 
-public class Note {
+public class Note implements Comparable<Note> {
 
+    private long[] noteVector;
+    private int trackNumber;
+    private int channelNumber;
+    private int noteNumber;
+    private int velocity;
+    private long noteOnTime;
+    private long noteOffTime;
+    private int noteOnIndex;
+    private int noteOffIndex;
     private int PPQN;
-    private int value;
-    private int duration;
-    private int type;
+    private long duration;
+    private double type;
 
     public static final double WHOLE = 4.0;
     public static final double HALF = 2.0;
@@ -12,27 +23,47 @@ public class Note {
     public static final double EIGHTH = 1/2;
     public static final double SIXTEENTH = 1/4;
 
-    public Note(int PPQN, int noteValue, int noteDuration) {
+    public Note(int track, int chan, int nn, int v, long onT, long offT,
+                int onIndex, int offIndex, int PPQN) {
+
+        this.trackNumber = track;
+        this.channelNumber = chan;
+        this.noteNumber = nn;
+        this.velocity = v;
+        this.noteOnTime = onT;
+        this.noteOffTime = offT;
+        this.noteOnIndex = onIndex;
+        this.noteOffIndex = offIndex;
         this.PPQN = PPQN;
-        this.value = noteValue;
-        this.duration = noteDuration;
+        this.noteVector = new long[]{ track, chan, nn, v, onT, offT, onIndex, offIndex };
+
+        this.duration = noteOffTime - noteOnTime;
         this.type = this.duration / this.PPQN;
     }
 
-    public int getPPQN() {
-        return PPQN;
-    }
+    public long[] getNoteVector() { return noteVector; }
+    public int getTrackNumber() { return trackNumber; }
+    public int getChannelNumber() { return channelNumber; }
+    public int getNoteNumber() { return noteNumber; }
+    public int getVelocity() { return velocity; }
+    public long getNoteOnTime() { return noteOnTime; }
+    public long getNoteOffTime() { return noteOffTime; }
+    public int getNoteOnIndex() { return noteOnIndex; }
+    public int getNoteOffIndex() { return noteOffIndex; }
+    public int getPPQN() { return PPQN; }
+    public long getDuration() { return duration; }
+    public double getType() { return type; }
+    public boolean isHalfNote() { return type == HALF; }
+    public boolean isQuarterNote() { return type == QUARTER; }
+    public boolean isEighthNote() { return type == EIGHTH; }
 
-    public int getValue() {
-        return value;
+    @Override
+    public int compareTo(Note o) {
+        if (this.noteOnIndex < o.noteOnIndex)
+            return -1;
+        else if (this.noteOnIndex > o.noteOnIndex)
+            return 1;
+        else
+            return 0;
     }
-
-    public int duration() {
-        return duration;
-    }
-
-    public int getType() {
-        return type;
-    }
-
 }

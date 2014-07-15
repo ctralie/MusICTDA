@@ -1,7 +1,7 @@
-function [ midiaudio, notematrix ] = loadmidi( path )
+function [ midimain, notematrix ] = loadmidi( path )
 
-midiaudio = javaObjectEDT('MidiAudio', path);
-notematrix = midiaudio.getNotesMatrix;
+midimain = javaObjectEDT('MidiMain', path);
+notematrix = midimain.getNoteMatrix;
 
 % notematrixlabels = [    '1. track number', ...
 %                         '2. channel number', ...
