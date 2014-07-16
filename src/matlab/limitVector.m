@@ -1,4 +1,4 @@
-function [ limVect ] = limitVector( Trans ) 
+function [ limVect ] = limitVector( Trans, n ) 
 %[limVect] = limitVector(Trans) computes the limiting vector from Trans.
 
 limTrans = limitMatrix(Trans,n); 
