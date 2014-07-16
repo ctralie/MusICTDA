@@ -21,14 +21,18 @@ public class Midi2Markov {
         }
     }
 
+    // 1x128 array of the count of notes in this markov chain
     public int[] getNoteCount() {
         return noteCount;
     }
 
+    // 1xn array such that the ith value indicates the value of the note
+    // in the ith index of the transition probability matrix
     public int[] getNoteIndex() {
         return noteIndex;
     }
 
+    // Transition matrix for 1st or 2nd order markov chain
     public double[][] getTransitionMatrix(int order) {
         // validate order inputs
         int iterationEnd;
