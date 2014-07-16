@@ -1,0 +1,9 @@
+function [ fundTransErg ] = fundMatrixErg( Trans, n )
+%[fundTransErg] = fundMatrixErg(Trans) returns the fundamental matrix
+%   fundTransErg of an ergodic, regular chain given the transition matrix 
+%   of the chain Trans. 
+
+limTrans = limitMatrix(Trans,n);
+fundTransErg = inv(eye(size(Trans)) - Trans + limTrans);
+
+end
