@@ -1,7 +1,9 @@
 function [ canTrans, tranStates, transAbsorb ] = canonicalForm( Trans ) 
-%[cTrans,tranStates,transAbsorb] = canonicalForm(Trans) turns transition matrix Trans 
-%   with absorbing and transient states into canonical form canTrans and 
-%   transient matrix tranStates and transAbsorb. 
+%CANONICALFORM converts transition matrix to canonical form
+%   [canTrans,tranStates,transAbsorb] = canonicalForm(Trans) turns 
+%   transition matrix Trans into canonical form canTrans, also returning 
+%   matrix of only transient states tranStates and matrix of transient
+%   states going to absorbing states transAbsorb.  
 
 length = size(Trans,2);
 Trans = sparse(Trans);
