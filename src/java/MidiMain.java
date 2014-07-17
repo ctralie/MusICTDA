@@ -58,7 +58,7 @@ public class MidiMain {
         int[] noteIndex1 = midi2Markov1.getNoteIndex();
         System.out.println(tMatrix1.length + " | " + tMatrix1[0].length);
         System.out.println(noteIndex1.length);
-g
+
         double[][] tMatrix2 = midi2Markov1.getTransitionMatrix(2);
         int[] noteIndex2 = midi2Markov1.getNoteIndex();
         System.out.println(tMatrix2.length + " | " + tMatrix2[0].length);
