@@ -5,7 +5,7 @@ function [ absorbed ] = absorbSteps( Trans )
 %   is absorbed.
 
 fundTrans = fundMatrix(Trans);
-length = size(fundTrans);
+length = size(fundTrans,1);
 absorbed = fundTrans*ones(length,1); 
 
 end
