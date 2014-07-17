@@ -4,8 +4,8 @@ function [ meanRecVector, meanRecMatrix ] = meanRecurrenceTime( Trans, n )
 %   [meanRecVector] = meanRecurrenceTime(Trans,n) gives mean recurrence times
 %   in vector meanRecVector and diagonalizes those entries in meanRecMatrix.
 
-limVect = limitVector(Trans,n);
-meanRecVector = 1./limVect; 
+[limVec,~] = limiting(Trans,n);
+meanRecVector = 1./limVec; 
 meanRecMatrix = diag(meanRecVector);
 
 end
