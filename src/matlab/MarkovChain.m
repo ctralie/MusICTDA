@@ -44,6 +44,10 @@ classdef MarkovChain < handle
             absorbMatrix = absorbProb(this.Trans);
         end
         
+        function absorbed = absorbNumSteps(this)
+            absorbed = absorbSteps(this.Trans); 
+        end
+        
         function meanFPMatrix = meanFP(this)
             meanFPMatrix = meanFirstPassage(this.Trans, this.numSteps);
         end
