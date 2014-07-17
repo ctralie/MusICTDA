@@ -1,59 +1,53 @@
 classdef MarkovChain < handle
     properties(SetAccess = 'public', GetAccess = 'public')
-        Trans;
-        numSteps;
-        rowState;
-        colState;
-        initVec; 
+        transitionMatrix;
+        noteIndex;
     end
     
     methods(Access = 'public')
-        function this = MarkovChain(trans, n, i, j, initial)
-            this.Trans = trans;
-            this.numSteps = n;
-            this.rowState = i;
-            this.colState = j;
-            this.initVec = initial;
+        function this = MarkovChain(transitionMatrix, noteIndex)
+            this.transitionMatrix = transitionMatrix;
+            this.noteIndex = noteIndex;
         end
         
-        function [transMatrix, prob] = nMatrix(this)
-            [transMatrix, prob] = matrixPowers(this.Trans, this.numSteps, this.rowState, this.colState);            
-        end   
-        
-        function finalDistrib = finalProbDistrib(this)
-            finalDistrib = probDistribution(this.Trans, this.numSteps, this.initVec);
+        function [transMatrix, prob] = nMatrix(this, numSteps, initState, finState)
+            [transMatrix, prob] = matrixPowers(this.transitionMatrix, numSteps, initState, finState);            
         end
         
-        function [limVec, limMatrix] = limitingMatrix(this)
-            [limVec, limMatrix] = limiting(this.Trans, this.numSteps);
+        function finalDistrib = finalProbDistrib(this, numSteps, initVec)
+            finalDistrib = probDistribution(this.transitionMatrix, numSteps, initVec);
+        end
+        
+        function [limVec, limMatrix] = limitingMatrix(this, numSteps)
+            [limVec, limMatrix] = limiting(this.transitionMatrix, numSteps);
         end
         
         function [cTrans,tranStates,transAbsorb] = convert2canonical(this)
-            [cTrans,tranStates,transAbsorb] = canonicalForm(this.Trans);
+            [cTrans,tranStates,transAbsorb] = canonicalForm(this.transitionMatrix);
         end
         
         function fundTrans = fund(this)
-            fundTrans = fundMatrix(this.Trans);
+            fundTrans = fundMatrix(this.transitionMatrix);
         end
         
         function fundTransErg = fundErg(this)
-            fundTransErg = fundMatrixErg(this.Trans);
+            fundTransErg = fundMatrixErg(this.transitionMatrix);
         end
         
         function absorbMatrix = absorb(this)
-            absorbMatrix = absorbProb(this.Trans);
+            absorbMatrix = absorbProb(this.transitionMatrix);          
         end
         
         function absorbed = absorbNumSteps(this)
-            absorbed = absorbSteps(this.Trans); 
+            absorbed = absorbSteps(this.transitionMatrix); 
         end
         
         function meanFPMatrix = meanFP(this)
-            meanFPMatrix = meanFirstPassage(this.Trans, this.numSteps);
+            meanFPMatrix = meanFirstPassage(this.transitionMatrix, numSteps);
         end
         
-        function [meanRecVector, meanRecMatrix] = meanRT(this)
-            [meanRecVector, meanRecMatrix] = meanRecurrenceTime(this.Trans, this.numSteps);
+        function [meanRecVector, meanRecMatrix] = meanRT(this, numSteps)
+            [meanRecVector, meanRecMatrix] = meanRecurrenceTime(this.transitionMatrix, numSteps);
         end
         
     end
