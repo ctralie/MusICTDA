@@ -5,22 +5,18 @@ function [ canTrans, tranStates, transAbsorb ] = canonicalForm( Trans )
 %   matrix of only transient states tranStates and matrix of transient
 %   states going to absorbing states transAbsorb.  
 
-length = size(Trans,2);
 Trans = sparse(Trans);
 
 diagM = logical(eye(size(Trans)));
-zeroDiag = Trans(diagM) == 0;
+Diag = Trans(diagM) ~= 1;
 oneDiag = Trans(diagM) == 1;
-tranStates = Trans(:,zeroDiag);
+tranStates = Trans(:,Diag);
 tranStates = tranStates(~oneDiag,:);
 
 transAbsorb = Trans(:,oneDiag);
 transAbsorb = transAbsorb(~oneDiag,:);
 
-% transient = length - size(transAbsorb,2);
-
 zero = sparse(size(transAbsorb,2),size(tranStates,1));
-eyeM = speye(size(transAbsorb,2)); 
+eyeM = speye(size(transAbsorb,2));
 
 canTrans = [tranStates,transAbsorb;zero,eyeM];
-end
