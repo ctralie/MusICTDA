@@ -5,7 +5,6 @@ function [ absorbMatrix ] = absorbProb( Trans )
 %   absorbing state using transition matrix Trans. 
 
 [~,~,transAbsorb] = canonicalForm(Trans);
-fundTrans = fundMatrix(Trans);
-absorbMatrix = fundTrans*transAbsorb; 
+absorbMatrix = fundMatrix(Trans)*transAbsorb; 
 
 end
