@@ -1,6 +1,8 @@
 function [ absorbed ] = absorbSteps( Trans )
-%[absorbed] = absorbSteps(Trans) calculates the expected number of steps
-%   before a chain is absorbed, given that the chain starts in state i. 
+%ABSORBSTEPS computes expected number of steps before chain is absorbed
+%   [absorbed] = absorbSteps(Trans) returns absorbed, a vector detailing
+%   the expected number of steps, for each starting state, before a chain 
+%   is absorbed.
 
 fundTrans = fundMatrix(Trans);
 length = size(fundTrans);
