@@ -1,9 +1,8 @@
 function [ final ] = probDistribution( Trans, n, initial )
-%[final] = probDistribution(Trans,n,initial) takes in transition matrix Trans, 
-%   n steps, and row probability vector, initial, of starting distribution and
-%   returns final, ending distribution vector. To examine behavior of chain 
-%   assuming it starts in state i, set ith entry of initial to 1 and all
-%   other entries equal to 0. 
+%PROBDISTRIBUTION computes final distribution vector given initial vector
+%   [final] = probDistribution(Trans,n,initial) returns ending distribution
+%   vector, final, using transition matrix Trans, n steps, and row
+%   probability vector of starting distribution, initial. 
 
 Trans = sparse(Trans); 
 nTrans = matrixPowers(Trans,n); 
