@@ -1,28 +1,32 @@
 function [ meanFPMatrix ] = meanFirstPassage ( Trans, n )
 %MEANFIRSTPASSAGE computes expected number of steps to reach ending state
-%for first time for ergodic Markov chain 
-%   [meanFPMatrix] = meanFirstPassage(Trans) returns meanFPMatrix, the 
+%for first time for regular, ergodic Markov chain 
+%   [meanFPMatrix] = meanFirstPassage(Trans,n) returns meanFPMatrix, the 
 %   matrix of mean times to go from every starting state to every ending 
 %   state, assuming passage time is trivial if start/end states are the same. 
 
-[~,meanRecMatrix] = meanRecurrenceTime(Trans);
-fundTransErg = fundMatrixErg(Trans);
-limTrans = limitMatrix(Trans,n);
+%transition matrix for regular chain  
+[~,meanRecMatrix] = meanRecurrenceTime(Trans,n);
+fundTransErg = fundMatrixErg(Trans,n);
+[~,limMatrix] = limiting(Trans,n);
 
 difMatrix = ones(size(meanRecMatrix)) - fundTransErg*meanRecMatrix;
-dif2Matrix = eye(size(limTrans)) - limTrans;  
-meanFPMatrix = difMatrix*inv(dif2Matrix);
+dif2Matrix = eye(size(full(limMatrix))) - full(limMatrix);  
+meanFPMatrix = dif2Matrix\difMatrix;
 
-end
+
 
 % M = C - ZD + WM 
-% M(I-W) = C - ZD
-% M = (C - ZD)*(I - W)^-1
+% (I-W)M = C - ZD
+% M = (I-W)\(C-ZD) 
 % Z = fundmatrix, I = identity, W = lim matrix, C =
 % ones(size(meanRecMatrix)), D = meanRecMatrix
+% (I-P)M = C - D
 %{
-[~,meanRecMatrix] = meanRecurrenceTime(Trans);
+[~,meanRecMatrix] = meanRecurrenceTime(Trans,n);
 difMatrix = ones(size(meanRecMatrix)) - meanRecMatrix;
-Matrix = eye(size(Trans)) - Trans;
+[canTrans,~,~] = canonicalForm(Trans); %prob w canonicalForm
+Matrix = eye(size(canTrans)) - canTrans;
 meanFPMatrix = Matrix\difMatrix;
 %}
+end
