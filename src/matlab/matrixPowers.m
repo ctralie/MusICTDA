@@ -1,8 +1,9 @@
 function [ nTrans, prob ] = matrixPowers( Trans, n, i, j )
-%[nTrans,prob] = matrixPowers(Trans,n,i,j) takes transition matrix Trans and 
-%   computes nTrans after n steps. Optional input args i, j range from 
-%   1:size(:,nTrans) and return probability Markov chain goes from
-%   state i to j after n steps.  
+%MATRIXPOWERS computes transition matrix after n steps 
+%   [nTrans,prob] = matrixPowers(Trans,n,i,j) computes matrix nTrans of
+%   transition matrix Trans after n steps. Optional args starting state i,
+%   ending state j return prob, probability Markov chain goes from state i 
+%   to j after n steps.  
 
 Trans = sparse(Trans); 
 nTrans = Trans^n;
