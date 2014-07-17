@@ -57,6 +57,12 @@ public class Note implements Comparable<Note> {
     public boolean isQuarterNote() { return type == QUARTER; }
     public boolean isEighthNote() { return type == EIGHTH; }
 
+    // transcibe the note by however many halfSteps.
+    public Note transcribe(int halfSteps) {
+        this.noteNumber += halfSteps;
+        return this;
+    }
+
     @Override
     public int compareTo(Note o) {
         if (this.noteOnTime < o.noteOnTime)

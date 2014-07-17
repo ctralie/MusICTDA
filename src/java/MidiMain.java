@@ -13,6 +13,7 @@ public class MidiMain {
     private MidiParser midiParser;
     private MidiPlayer midiPlayer;
     private Midi2Markov midi2Markov;
+    private Midi2Markov midi2MarkovTranscribed;
 
     public MidiMain(String path) {
         try {
@@ -23,6 +24,7 @@ public class MidiMain {
         midiParser = new MidiParser(sequence);
         midiPlayer = MidiPlayer.getMidiPlayerInstance(sequence);
         midi2Markov = new Midi2Markov(midiParser.getNoteSequence());
+        midi2MarkovTranscribed = new Midi2Markov(midiParser.getNoteSequence(), midiParser.getKeySignature());
     }
 
     public Sequence getSequence() {
@@ -39,6 +41,10 @@ public class MidiMain {
 
     public Midi2Markov getMidi2Markov() {
         return midi2Markov;
+    }
+
+    public Midi2Markov getMidi2MarkovTranscribed() {
+        return midi2MarkovTranscribed;
     }
 
     public static void main(String[] args) {

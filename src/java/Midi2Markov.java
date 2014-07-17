@@ -11,7 +11,7 @@ public class Midi2Markov {
     private int[] noteCount;    // count of all the available notes (0 to 127)
     private int[] noteIndex;
 
-    public Midi2Markov(ArrayList<Note> notes) {
+    private void init(ArrayList<Note> notes) {
         this.notes = notes;
 
         // save a count of all notes
@@ -19,6 +19,34 @@ public class Midi2Markov {
         for (Note note : notes) {
             noteCount[note.getNoteNumber()]++;
         }
+    }
+
+    public Midi2Markov(ArrayList<Note> notes) {
+        init(notes);
+    }
+
+    // constructor for transcribing any piece to C Major or A Minor
+    public Midi2Markov(ArrayList<Note> notes, long[][] keySignature) {
+        ArrayList<Note> transcribedNotes = new ArrayList<Note>();
+        // iterate over all notes, transcribe to new key as specified in keySignature
+        int index = 0;
+        int keyCount = keySignature.length;
+        int transposition = getTransposition((int) keySignature[index][1]);
+        for (Note n: notes) {
+            // update key Signature if necessary
+            if (index < keyCount && keySignature[index+1][0] <= n.getNoteOnTime()) {
+                index = index+1;
+                transposition = getTransposition((int) keySignature[index][1]);
+            }
+            transcribedNotes.add(n.transcribe(transposition));
+        }
+        // initialize instance variables
+        init(transcribedNotes);
+    }
+
+    // perform transcription from key signature to # of half step shifts
+    private int getTransposition(int key) {
+        return (key * 7) % 12;
     }
 
     // 1x128 array of the count of notes in this markov chain

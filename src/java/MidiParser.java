@@ -12,8 +12,9 @@ public class MidiParser {
 
     private Sequence sequence;
     private int PPQN;
-    private double BPM;
-    private int[] timeSignature;
+    private double[][] BPM; // [ tick #, BPM ]
+    private long[][] timeSignature;  // [ tick #, numerator, denominator ]
+    private long[][] keySignature;   // [tick #, sharp/flat count, major/minor]
 
     public MidiParser(Sequence seq) {
 
@@ -24,43 +25,59 @@ public class MidiParser {
         PPQN = sequence.getResolution();
 
         // Parse all MIDI events
+        ArrayList<double[]> BPMArray = new ArrayList<double[]>();
+        ArrayList<long[]> timeSigArray = new ArrayList<long[]>();
+        ArrayList<long[]> keySigArray = new ArrayList<long[]>();
         MidiEvent midiEvent;
         MetaMessage metaMessage;
-        boolean bpmfound = false;
-        boolean timesigfound = false;
         Track[] tracks = sequence.getTracks();
-        outerLoop:
         for (Track track: tracks) {
             for (int j = 0; j < track.size(); j++) {
                 if (isMetaEvent(midiEvent = track.get(j))) {
+                    long tick = midiEvent.getTick();
                     if (isTempoMessage(metaMessage = (MetaMessage) midiEvent.getMessage())) {
                         byte[] bytes = metaMessage.getData();
                         int data = (bytes[0] & 0xff) << 16 | (bytes[1] & 0xff) << 8 | (bytes[2] & 0xff);
-                        BPM = 6e7 / data;
-                        bpmfound = true;
+                        BPMArray.add(new double[] { (double) tick, 6e7 / data });
                     }
                     if (isTimeSigMessage(metaMessage = (MetaMessage) midiEvent.getMessage())) {
                         byte[] data = metaMessage.getData();
-                        timeSignature = new int[] { (int) data[1], (int) data[2] };
-                        timesigfound = true;
+                        timeSigArray.add(new long[] { tick, (long) data[1], (long) data[2] });
+                    }
+                    if (isKeySigMessage(metaMessage = (MetaMessage) midiEvent.getMessage())) {
+                        byte[] data = metaMessage.getData();
+                        keySigArray.add(new long[] { tick, (long) data[1], (long) data[2] });
                     }
                 }
-                if (bpmfound && timesigfound)
-                    break outerLoop;
             }
         }
+
+        // convert from ArrayLists to array[][].
+        BPM = new double[BPMArray.size()][BPMArray.get(0).length];
+        for (int i = 0; i < BPMArray.size(); i++)
+            BPM[i] = BPMArray.get(i);
+        timeSignature = new long[timeSigArray.size()][timeSigArray.get(0).length];
+        for (int i = 0; i < timeSigArray.size(); i++)
+            timeSignature[i] = timeSigArray.get(i);
+        keySignature = new long[keySigArray.size()][keySigArray.get(0).length];
+        for (int i = 0; i < keySigArray.size(); i++)
+            keySignature[i] = keySigArray.get(i);
     }
 
     public int getPPQN() {
         return PPQN;
     }
 
-    public double getBPM() {
+    public double[][] getBPM() {
         return BPM;
     }
 
-    public int[] getTimeSignature() {
+    public long[][] getTimeSignature() {
         return timeSignature;
+    }
+
+    public long[][] getKeySignature() {
+        return keySignature;
     }
 
     public Sequence getSequence() {
@@ -188,6 +205,10 @@ public class MidiParser {
 
     private boolean isTempoMessage(MetaMessage metaMessage) {
         return metaMessage.getType() == 81;
+    }
+
+    private boolean isKeySigMessage(MetaMessage metaMessage) {
+        return metaMessage.getType() == 89;
     }
 
     private boolean isNoteMessage(ShortMessage shortMessage) {
