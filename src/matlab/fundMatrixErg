@@ -4,7 +4,7 @@ function [ fundTransErg ] = fundMatrixErg( Trans, n )
 %   [fundTransErg] = fundMatrixErg(Trans) computes fundamental matrix
 %   fundTransErg of ergodic, regular chain from transition matrix Trans. 
 
-limTrans = limitMatrix(Trans,n);
-fundTransErg = inv(eye(size(Trans)) - Trans + limTrans);
+[~,limMatrix] = limiting(Trans,n);
+fundTransErg = inv(eye(size(Trans)) - Trans + limMatrix);
 
 end
