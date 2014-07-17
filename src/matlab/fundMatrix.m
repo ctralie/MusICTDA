@@ -8,7 +8,6 @@ function [ fundTrans ] = fundMatrix( Trans )
 %   required before absorption. 
  
 [~,tranStates,~] = canonicalForm(Trans);
-length = size(tranStates,1);
-fundTrans = inv(speye(length) - sparse(tranStates)); 
+fundTrans = inv(speye(size(tranStates)) - sparse(tranStates)); 
 
 end
