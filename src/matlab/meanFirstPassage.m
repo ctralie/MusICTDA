@@ -1,7 +1,9 @@
 function [ meanFPMatrix ] = meanFirstPassage ( Trans, n )
-%[meanFPMatrix] = meanFirstPassage(Trans) returns the matrix listing the
-% mean first passage times to go from row state to column state, excluding 
-% diagonals: meanFPMatrix.
+%MEANFIRSTPASSAGE computes expected number of steps to reach ending state
+%for first time for ergodic Markov chain 
+%   [meanFPMatrix] = meanFirstPassage(Trans) returns meanFPMatrix, the 
+%   matrix of mean times to go from every starting state to every ending 
+%   state, assuming passage time is trivial if start/end states are the same. 
 
 [~,meanRecMatrix] = meanRecurrenceTime(Trans);
 fundTransErg = fundMatrixErg(Trans);
