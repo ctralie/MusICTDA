@@ -1,20 +1,20 @@
-%INPUTS
-%hopSize: hopSize to use with the STFT (the number of samples in each STFT
-%window, referred to as the "analysis window")
-%skipSize (integer): The program will use a number of samples equal to 
-%hopSize*skipSize in between delay series samples
-%windowSize (integer): The number of hopSizes to use for each delay series sample
-%(this is also referred to as the "texture window")
-%NOTE: A windowSize of 1 skips using a texture window
-
-%RETURNS
-%DelaySeries: The delay series point cloud, with the points along the rows
-%and the features along the columns
-%Fs: Sampling Frequency
-%SampleDelays: Where each delay sample starts (sample number in the sound
-%file)
-%FeatureNames: A cell array of strings that describe each feature
 function [DelaySeries, Fs, SampleDelays, FeatureNames] = getDelaySeriesFeatures( filename, hopSize, skipSize, windowSize )
+%GETDELAYSERIESFEATURES
+% INPUTS
+% hopSize: hopSize to use with the STFT (the number of samples in each STFT
+% window, referred to as the "analysis window")
+% skipSize (integer): The program will use a number of samples equal to
+% hopSize*skipSize in between delay series samples
+% windowSize (integer): The number of hopSizes to use for each delay series sample
+% (this is also referred to as the "texture window")
+% NOTE: A windowSize of 1 skips using a texture window
+% RETURNS
+% DelaySeries: The delay series point cloud, with the points along the rows
+% and the features along the columns
+% Fs: Sampling Frequency
+% SampleDelays: Where each delay sample starts (sample number in the sound file)
+% FeatureNames: A cell array of strings that describe each feature
+
     addpath('chroma-ansyn');
     addpath('rastamat');
     readSuccess = 0;
