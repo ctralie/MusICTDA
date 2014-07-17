@@ -30,11 +30,11 @@ public class Midi2Markov {
         ArrayList<Note> transcribedNotes = new ArrayList<Note>();
         // iterate over all notes, transcribe to new key as specified in keySignature
         int index = 0;
-        int keyCount = keySignature.length;
+        int keyTotalIndex = keySignature.length-1;
         int transposition = getTransposition((int) keySignature[index][1]);
         for (Note n: notes) {
             // update key Signature if necessary
-            if (index < keyCount && keySignature[index+1][0] <= n.getNoteOnTime()) {
+            if (index < keyTotalIndex && keySignature[index+1][0] <= n.getNoteOnTime()) {
                 index = index+1;
                 transposition = getTransposition((int) keySignature[index][1]);
             }
@@ -139,4 +139,14 @@ public class Midi2Markov {
         return transitionMatrix;
     }
 
+    // Return a matrix of note information, primary for matlab matrix manipulations
+    public long[][] getNoteMatrix() {
+        // convert to double[][] for easier matlab integration :(
+        long[][] noteMatrix = new long[notes.size()][notes.get(0).getNoteVector().length];
+        for (int i = 0; i < notes.size(); i++) {
+            long[] noteVector = notes.get(i).getNoteVector();
+            System.arraycopy(noteVector, 0, noteMatrix[i], 0, noteVector.length);
+        }
+        return noteMatrix;
+    }
 }

@@ -46,7 +46,7 @@ public class MidiParser {
                     }
                     if (isKeySigMessage(metaMessage = (MetaMessage) midiEvent.getMessage())) {
                         byte[] data = metaMessage.getData();
-                        keySigArray.add(new long[] { tick, (long) data[1], (long) data[2] });
+                        keySigArray.add(new long[] { tick, (long) data[0], (long) data[1] });
                     }
                 }
             }
@@ -172,19 +172,6 @@ public class MidiParser {
         }
         Collections.sort(noteData);
         return noteData;
-    }
-
-    // Return a matrix of note information, primary for matlab matrix manipulations
-    public long[][] getNoteMatrix() {
-        ArrayList<Note> noteData = getNoteSequence();
-
-        // convert to double[][] for easier matlab integration :(
-        long[][] noteMatrix = new long[noteData.size()][noteData.get(0).getNoteVector().length];
-        for (int i = 0; i < noteData.size(); i++) {
-            long[] noteVector = noteData.get(i).getNoteVector();
-            System.arraycopy(noteVector, 0, noteMatrix[i], 0, noteVector.length);
-        }
-        return noteMatrix;
     }
 
     private boolean isMetaEvent(MidiEvent event) {

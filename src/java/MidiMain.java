@@ -48,10 +48,10 @@ public class MidiMain {
     }
 
     public static void main(String[] args) {
-        MidiMain midi = new MidiMain("lib/music_examples/short_sample_1.mid");
+        MidiMain midi = new MidiMain("lib/music_examples/short_sample_3.mid");
         MidiParser midiParser1 = midi.getMidiParser();
         MidiPlayer midiPlayer1 = midi.getMidiPlayer();
-        Midi2Markov midi2Markov1 = midi.getMidi2Markov();
+        Midi2Markov midi2Markov1 = midi.getMidi2MarkovTranscribed();
 
         double[][] tMatrix1 = midi2Markov1.getTransitionMatrix(1);
         int[] noteIndex1 = midi2Markov1.getNoteIndex();
@@ -63,7 +63,8 @@ public class MidiMain {
         System.out.println(tMatrix2.length + " | " + tMatrix2[0].length);
         System.out.println(noteIndex2.length);
 
-        long[][] noteMatrix = midiParser1.getNoteMatrix();
+        long[][] noteMatrix = midi2Markov1.getNoteMatrix();
+        System.out.println(midiParser1.getKeySignature()[0][1]);
         midiPlayer1.play();
     }
 
