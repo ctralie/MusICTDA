@@ -49,6 +49,10 @@ public class Midi2Markov {
         return (key * 7) % 12;
     }
 
+    public ArrayList<Note> getNotes() {
+        return notes;
+    }
+
     // 1x128 array of the count of notes in this markov chain
     public int[] getNoteCount() {
         return noteCount;

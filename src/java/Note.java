@@ -4,7 +4,6 @@
 
 public class Note implements Comparable<Note> {
 
-    private long[] noteVector;
     private int trackNumber;
     private int channelNumber;
     private int noteNumber;
@@ -35,13 +34,11 @@ public class Note implements Comparable<Note> {
         this.noteOnIndex = onIndex;
         this.noteOffIndex = offIndex;
         this.PPQN = PPQN;
-        this.noteVector = new long[]{ track, chan, nn, v, onT, offT, onIndex, offIndex };
 
         this.duration = noteOffTime - noteOnTime;
         this.type = this.duration / this.PPQN;
     }
 
-    public long[] getNoteVector() { return noteVector; }
     public int getTrackNumber() { return trackNumber; }
     public int getChannelNumber() { return channelNumber; }
     public int getNoteNumber() { return noteNumber; }
@@ -57,7 +54,15 @@ public class Note implements Comparable<Note> {
     public boolean isQuarterNote() { return type == QUARTER; }
     public boolean isEighthNote() { return type == EIGHTH; }
 
-    // transcibe the note by however many halfSteps.
+    public long[] getNoteVector() {
+        return new long[] {
+                this.trackNumber, this.channelNumber,
+                this.noteNumber, this.velocity, this.noteOnTime,
+                this.noteOffTime, this.noteOnIndex, this.noteOffIndex
+        };
+    }
+
+    // transcribe the note by however many halfSteps.
     public Note transcribe(int halfSteps) {
         this.noteNumber += halfSteps;
         return this;
