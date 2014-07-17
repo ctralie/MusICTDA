@@ -1,6 +1,6 @@
 function [ fundTransErg ] = fundMatrixErg( Trans, n )
-%FUNDMATRIXERG converts transition matrix for ergodic Markov chains to 
-%fundamental matrix 
+%FUNDMATRIXERG converts transition matrix for regular, ergodic Markov chains 
+%to fundamental matrix 
 %   [fundTransErg] = fundMatrixErg(Trans) computes fundamental matrix
 %   fundTransErg of ergodic, regular chain from transition matrix Trans. 
 
