@@ -23,9 +23,9 @@ featureMatrix = NaN(numel(x), length(noteIndex)*(length(noteIndex)-1));
 % iterate through each piece, compute featureVectors
 for i=1:length(MidiMain)
    midimarkov = MidiMain{i}.getMidi2MarkovTranscribed;
-   transitionMatrix = sparse(midimarkov.getTransitionMatrix(1));
+   noteMatrix = sparse(midimarkov.getNoteTransitionMatrix(1));
    noteIndex = midimarkov.getNoteIndex;
-   mc = MarkovChain(transitionMatrix, noteIndex, minrange, maxrange);
+   mc = MarkovChain(noteMatrix, noteIndex, minrange, maxrange);
    featureMatrix(i,:) = mc.getMarkovFeatures;
 end
 

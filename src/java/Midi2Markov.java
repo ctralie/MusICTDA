@@ -27,6 +27,10 @@ public class Midi2Markov {
 
     // constructor for transcribing any piece to C Major or A Minor
     public Midi2Markov(ArrayList<Note> notes, long[][] keySignature) {
+        if (keySignature.length == 0) {
+            keySignature = new long[1][3];
+            keySignature[0] = new long[] { 0, 0, 0 };
+        }
         ArrayList<Note> transcribedNotes = new ArrayList<Note>();
         // iterate over all notes, transcribe to new key as specified in keySignature
         int index = 0;
@@ -65,7 +69,7 @@ public class Midi2Markov {
     }
 
     // Transition matrix for 1st or 2nd order markov chain
-    public double[][] getTransitionMatrix(int order) {
+    public double[][] getNoteTransitionMatrix(int order) {
         // validate order inputs
         int iterationEnd;
         if (order == 1) {

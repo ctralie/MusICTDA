@@ -1,7 +1,6 @@
 import javax.sound.midi.*;
 import java.lang.Exception;
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * Starting point for all other MIDI-related operations.
@@ -54,12 +53,12 @@ public class MidiMain {
         Midi2Markov midi2Markov2 = midi.getMidi2Markov();
         Midi2Markov midi2Markov1 = midi.getMidi2MarkovTranscribed();
 
-        double[][] tMatrix1 = midi2Markov1.getTransitionMatrix(1);
+        double[][] tMatrix1 = midi2Markov1.getNoteTransitionMatrix(1);
         int[] noteIndex1 = midi2Markov1.getNoteIndex();
         System.out.println(tMatrix1.length + " | " + tMatrix1[0].length);
         System.out.println(noteIndex1.length);
 
-        double[][] tMatrix2 = midi2Markov1.getTransitionMatrix(2);
+        double[][] tMatrix2 = midi2Markov1.getNoteTransitionMatrix(2);
         int[] noteIndex2 = midi2Markov1.getNoteIndex();
         System.out.println(tMatrix2.length + " | " + tMatrix2[0].length);
         System.out.println(noteIndex2.length);
@@ -67,7 +66,6 @@ public class MidiMain {
         for (int i = 0; i < midi2Markov1.getNoteMatrix().length; i++) {
             System.out.println(midi2Markov1.getNoteMatrix()[i][2] == midi2Markov2.getNoteMatrix()[i][2]);
         }
-        System.out.println(midiParser1.getKeySignature()[0][1]);
         midiPlayer1.play();
     }
 

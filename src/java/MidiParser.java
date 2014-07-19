@@ -53,15 +53,27 @@ public class MidiParser {
         }
 
         // convert from ArrayLists to array[][].
-        BPM = new double[BPMArray.size()][BPMArray.get(0).length];
-        for (int i = 0; i < BPMArray.size(); i++)
-            BPM[i] = BPMArray.get(i);
-        timeSignature = new long[timeSigArray.size()][timeSigArray.get(0).length];
-        for (int i = 0; i < timeSigArray.size(); i++)
-            timeSignature[i] = timeSigArray.get(i);
-        keySignature = new long[keySigArray.size()][keySigArray.get(0).length];
-        for (int i = 0; i < keySigArray.size(); i++)
-            keySignature[i] = keySigArray.get(i);
+        if (BPMArray.size() == 0) {
+            BPM = new double[0][0];
+        } else {
+            BPM = new double[BPMArray.size()][BPMArray.get(0).length];
+            for (int i = 0; i < BPMArray.size(); i++)
+                BPM[i] = BPMArray.get(i);
+        }
+        if (timeSigArray.size() == 0) {
+            timeSignature = new long[0][0];
+        } else {
+            timeSignature = new long[timeSigArray.size()][timeSigArray.get(0).length];
+            for (int i = 0; i < timeSigArray.size(); i++)
+                timeSignature[i] = timeSigArray.get(i);
+        }
+        if (keySigArray.size() == 0) {
+            keySignature = new long[0][0];
+        } else {
+            keySignature = new long[keySigArray.size()][keySigArray.get(0).length];
+            for (int i = 0; i < keySigArray.size(); i++)
+                keySignature[i] = keySigArray.get(i);
+        }
     }
 
     public int getPPQN() {

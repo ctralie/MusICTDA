@@ -41,8 +41,8 @@ To get note information transcribed to C Major or A Minor (Assumed to be so from
 
 To generate transition matrix for a first order Markov Chains of Notes:
 
-    transitionMatrix1 = midimarkov.getTransitionMatrix(1);
+    transitionMatrix1 = midimarkov.getNoteTransitionMatrix(1);
 
 To generate transition matrix for a second order Markov Chain of Notes:
 
-    transitionMatrix2 = midimarkov.getTransitionMatrix(2);
+    transitionMatrix2 = midimarkov.getNoteTransitionMatrix(2);
