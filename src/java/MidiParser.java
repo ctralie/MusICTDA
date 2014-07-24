@@ -15,6 +15,7 @@ public class MidiParser {
     private double[][] BPM; // [ tick #, BPM ]
     private long[][] timeSignature;  // [ tick #, numerator, denominator ]
     private long[][] keySignature;   // [tick #, sharp/flat count, major/minor]
+    private double microsecondsPerTick;
 
     public MidiParser(Sequence seq) {
 
@@ -74,6 +75,10 @@ public class MidiParser {
             for (int i = 0; i < keySigArray.size(); i++)
                 keySignature[i] = keySigArray.get(i);
         }
+
+        // calculate ticks per microsecond
+        this.microsecondsPerTick = 6e7 / (this.getBPM()[0][1] * this.getPPQN());
+
     }
 
     public int getPPQN() {
@@ -90,6 +95,10 @@ public class MidiParser {
 
     public long[][] getKeySignature() {
         return keySignature;
+    }
+
+    public double getMicrosecondsPerTick() {
+        return microsecondsPerTick;
     }
 
     public Sequence getSequence() {

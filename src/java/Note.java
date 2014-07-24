@@ -68,6 +68,11 @@ public class Note implements Comparable<Note> {
         return this;
     }
 
+    // returns key number, from C->0 to B->12.
+    public int getKeyNumber() {
+        return this.noteNumber % 12;
+    }
+
     @Override
     public int compareTo(Note o) {
         if (this.noteOnTime < o.noteOnTime)

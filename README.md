@@ -46,3 +46,13 @@ To generate transition matrix for a first order Markov Chains of Notes:
 To generate transition matrix for a second order Markov Chain of Notes:
 
     transitionMatrix2 = midimarkov.getNoteTransitionMatrix(2);
+
+To generate transition matrices for a Short-Time Markov Chain of first order,
+with 10 second window and 1 second increment:
+
+    stMatrix1 = midimarkov.getTemporalKeyTransitionMatrix(1, 1e7, 1e6);
+
+To generate transition matrices for a Short-Time Markov Chain of second order,
+with 10 second window and 1 second increment:
+
+    stMatrix2 = midimarkov.getTemporalKeyTransitionMatrix(2, 1e7, 1e6);
