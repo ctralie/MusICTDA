@@ -1,4 +1,7 @@
-function makeSynchronizedMCVideos(transitionMatrix, secPerSample, filename, outname, plot3D)
+function makeSynchronizedMCVideos(transitionMatrix, windowSize, increment, filename, outname, plot3D)
+
+increment = increment/1e6;
+windowSize = windowSize/1e6;
 
 featureMatrix = generateSTFeatureMatrix(transitionMatrix);
 [Y, eigs] = cmdscale(pdist(featureMatrix));
@@ -8,7 +11,7 @@ N = size(Y, 1);
 Colors = C( ceil( (1:N)*64/N ), :);
 
 TotalSamples = N;
-TotalSeconds = TotalSamples/secPerSample;
+TotalSeconds = TotalSamples*increment;
 FramesPerSecond = N/TotalSeconds;
 
 figure(1);
@@ -28,15 +31,14 @@ for ii = 1:N
 end
 
 [X, Fs] = audioread(filename);
-
+% X = X(1:length(X)-(windowSize-increment)*Fs, :);
 audiowrite('syncmoviesound.wav', X, Fs);
-
 
 PATH = getenv('PATH');
 setenv('PATH', [PATH ':/usr/local/bin']);
 
 
-system(sprintf('avconv -r %g -i syncmovie%s.png -i syncmoviesound.wav -b 65536k -r %24 %s', FramesPerSecond, '%d', FramesPerSecond, outname));
+system(sprintf('avconv -r %g -i syncmovie%s.png -i syncmoviesound.wav -b 65536k -r 24 %s', FramesPerSecond, '%d', outname));
 system('rm syncmovie*.png');
 
 end
