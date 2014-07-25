@@ -1,3 +1,8 @@
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.ShortMessage;
+
 /**
  * Note object class, encapsulates a Note message.
  */
@@ -15,6 +20,8 @@ public class Note implements Comparable<Note> {
     private int PPQN;
     private long duration;
     private double type;
+
+    public static final int C5 = 60;
 
     public static final double WHOLE = 4.0;
     public static final double HALF = 2.0;
@@ -71,6 +78,23 @@ public class Note implements Comparable<Note> {
     // returns key number, from C->0 to B->12.
     public int getKeyNumber() {
         return this.noteNumber % 12;
+    }
+
+    // outputs midi events corresponding to Midi note On and Off
+    public MidiEvent[] getKeyEvents() {
+        try {
+            MidiMessage shortMessageOn = new ShortMessage(ShortMessage.NOTE_ON,
+                    this.channelNumber, this.getKeyNumber() + C5, this.getVelocity());
+
+            MidiMessage shortMessageOff = new ShortMessage(ShortMessage.NOTE_OFF,
+                    this.channelNumber, this.getKeyNumber() + C5, this.getVelocity());
+            MidiEvent midiEventOn = new MidiEvent(shortMessageOn, this.noteOnTime);
+            MidiEvent midiEventOff = new MidiEvent(shortMessageOff, this.noteOffTime);
+
+            return new MidiEvent[]{midiEventOn, midiEventOff};
+        } catch (InvalidMidiDataException e) {
+            throw new IllegalArgumentException("Error in getKeyEvents :(");
+        }
     }
 
     @Override
