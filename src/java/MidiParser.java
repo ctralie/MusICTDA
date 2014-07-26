@@ -208,15 +208,15 @@ public class MidiParser {
     }
 
     private boolean isTimeSigMessage(MetaMessage metaMessage) {
-        return metaMessage.getType() == 88;
+        return metaMessage.getType() == 0x58;
     }
 
     private boolean isTempoMessage(MetaMessage metaMessage) {
-        return metaMessage.getType() == 81;
+        return metaMessage.getType() == 0x51;
     }
 
     private boolean isKeySigMessage(MetaMessage metaMessage) {
-        return metaMessage.getType() == 89;
+        return metaMessage.getType() == 0x59;
     }
 
     private boolean isNoteMessage(ShortMessage shortMessage) {

@@ -14,7 +14,7 @@ public class MidiPlayer {
     private PlayRunnable pr;
 
     // Ensures only ONE MidiPlayer object
-    public MidiPlayer() {}
+    private MidiPlayer() {}
     public static MidiPlayer getMidiPlayerInstance(Sequence seq) {
         if (null == midiPlayer) {
             midiPlayer = new MidiPlayer();
@@ -25,11 +25,19 @@ public class MidiPlayer {
     public static MidiPlayer getMidiPlayerInstance(String path) {
         try {
             Sequence seq = MidiSystem.getSequence(new File(path));
+            resetPlayer();
             return getMidiPlayerInstance(seq);
         } catch (Exception e) {
             System.out.println(e.toString());
             return null;
         }
+    }
+
+    // resets the MidiPlayer to null.
+    public static boolean resetPlayer() {
+        if (midiPlayer == null) return false;
+        else midiPlayer = null;
+        return true;
     }
 
     private void setSequence(Sequence seq) {
