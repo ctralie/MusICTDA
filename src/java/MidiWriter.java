@@ -12,8 +12,10 @@ public class MidiWriter {
     private static MidiWriter midiWriter;
 
     private MidiFileWriter midiFileWriter;
-    private Sequence sequence;
     private int[] notes;
+    private int[] velocities;
+    private long[] noteOnTimes;
+    private long[] noteOffTimes;
     private int PPQN;
     private double[][] BPM;
     public static final int DEFAULT_VELOCITY = 64;
@@ -24,6 +26,9 @@ public class MidiWriter {
         this.PPQN = DEFAULT_PPQN;
         this.BPM = new double[1][2];
         this.notes = new int[0];
+        this.velocities = new int[0];
+        this.noteOnTimes = new long[0];
+        this.noteOffTimes = new long[0];
     }
     public static MidiWriter getMidiPlayerInstance() {
         if (null == midiWriter) {
@@ -32,14 +37,24 @@ public class MidiWriter {
         return midiWriter;
     }
 
+    public void setNoteOnTimes(long[] onTimes) {
+        this.noteOnTimes = onTimes;
+    }
+
+    public void setNoteOffTimes(long[] offTimes) {
+        this.noteOffTimes = offTimes;
+    }
+
+    public void setVelocity(int[] velocities) {
+        this.velocities = velocities;
+    }
+
     public void setNotes(int[] notes) {
         this.notes = notes;
-        initialize();
     }
 
     public void setPPQN(int PPQN) {
         this.PPQN = PPQN;
-        initialize();
     }
 
     public void setBPM(double[][] BPM) {
@@ -54,42 +69,85 @@ public class MidiWriter {
         return newdata;
     }
 
-    private void initialize() {
+    private Sequence initializeSequence() throws InvalidMidiDataException {
         this.midiFileWriter = new StandardMidiFileWriter();
 
-        // initialize sequence and track
-        try {
-            sequence = new Sequence(Sequence.PPQ, PPQN);
-        } catch (InvalidMidiDataException e) {
-            throw new IllegalArgumentException("Error creating Sequence in MidiWriter :(");
+        /**
+         * Validate Sequence inputs and modify as appropriate.
+         */
+        // validate notes count
+        if (this.notes.length == 0)
+            throw new IllegalArgumentException("MidiWriter: No notes loaded in writer!");
+
+        // validate velocities
+        if (this.velocities.length == 0) {
+            this.velocities = new int[this.notes.length];
+            for (int i = 0; i < this.velocities.length; i++) {
+                this.velocities[i] = DEFAULT_VELOCITY;
+            }
         }
+        if (this.velocities.length != this.notes.length)
+            throw new IllegalArgumentException("MidiWriter: Velocity vector not the same size as that of notes!");
+
+        // validate NoteOnTimes
+        long startTime = 0;
+        if (this.noteOnTimes.length == 0) {
+            this.noteOnTimes = new long[this.notes.length];
+            for (int i = 0; i < this.noteOnTimes.length; i++) {
+                this.noteOnTimes[i] = startTime;
+                startTime = startTime + this.PPQN;
+            }
+        }
+        if (this.noteOnTimes.length != this.notes.length)
+            throw new IllegalArgumentException("MidiWriter: NoteOnTime vector not the same size as that of notes!");
+
+        // validate noteOffTimes
+        long endTime = this.PPQN;
+        if (this.noteOffTimes.length == 0) {
+            this.noteOffTimes = new long[this.notes.length];
+            for (int i = 0; i < this.noteOffTimes.length; i++) {
+                this.noteOffTimes[i] = endTime;
+                endTime = endTime + this.PPQN;
+            }
+        }
+        if (this.noteOffTimes.length != this.notes.length)
+            throw new IllegalArgumentException("MidiWriter: NoteOffTime vector not the same size as that of notes!");
+
+        // initialize sequence and track
+        Sequence sequence = new Sequence(Sequence.PPQ, this.PPQN);
         Track track = sequence.createTrack();
 
-        // add tempo metaevent to track
-        byte[] data = BPM2Tempo(this.BPM[0][1]);
-        try {
-            MetaMessage metaMessage = new MetaMessage(TEMPO_TYPE, data, 3);
-            MidiEvent midiEvent = new MidiEvent(metaMessage, (long) this.BPM[0][0]);
-            track.add(midiEvent);
-        } catch (InvalidMidiDataException e) {
-            throw new IllegalArgumentException("Error creating tempo MetaMessage in MidiWriter.");
+        // add tempo (BPM) metaevent to track
+        for (double[] aBPM : this.BPM) {
+            byte[] data = BPM2Tempo(aBPM[1]);
+            try {
+                MetaMessage metaMessage = new MetaMessage(TEMPO_TYPE, data, 3);
+                MidiEvent midiEvent = new MidiEvent(metaMessage, (long) aBPM[0]);
+                track.add(midiEvent);
+            } catch (InvalidMidiDataException e) {
+                throw new IllegalArgumentException("Error creating tempo MetaMessage in MidiWriter.");
+            }
         }
 
         // add notes events to track
-        long onTime = 0;
-        for (int i : notes) {
-            Note n = new Note(1, 1, i, DEFAULT_VELOCITY, onTime, onTime+PPQN, 0, 0, PPQN);
+        for (int i = 0; i < this.notes.length; i++) {
+            int nn = this.notes[i];
+            int v = this.velocities[i];
+            long noteOn = this.noteOnTimes[i];
+            long noteOff = this.noteOffTimes[i];
+            Note n = new Note(1, 1, nn, v , noteOn, noteOff, 0, 0, this.PPQN);
             MidiEvent[] midiEvents = n.getKeyEvents();
             track.add(midiEvents[0]);
             track.add(midiEvents[1]);
-            onTime += PPQN;
         }
+        return sequence;
     }
 
     // writes note sequence to Midi File
-    public void writeToFile(String fileName) throws IOException {
+    public void writeToFile(String fileName) throws IOException, InvalidMidiDataException {
         File f = new File(fileName);
-        midiFileWriter.write(sequence, 0, f);
+        Sequence seq = initializeSequence();
+        midiFileWriter.write(seq, 0, f);
     }
 
     public static void main(String[] args) {

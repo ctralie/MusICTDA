@@ -69,6 +69,8 @@ public class MidiMain {
             midiWriter1.writeToFile("output.mid");
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
         }
         MidiMain midiMain2 = new MidiMain("output.mid");
         MidiParser midiParser2 = midiMain2.getMidiParser();
