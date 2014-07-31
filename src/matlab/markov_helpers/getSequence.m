@@ -1,4 +1,4 @@
-function noteSequence = getSequence( Trans, start, count )
+function [ noteSequence ] = getSequence( Trans, start, count )
 %GETSEQUENCE returns array of notes in sequence
 %   noteSequence = getSequence(Trans,start,count) takes transition matrix
 %   Trans, starting note start, and entire sequence's note duration count 
