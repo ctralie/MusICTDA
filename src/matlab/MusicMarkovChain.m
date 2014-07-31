@@ -1,17 +1,29 @@
-classdef MarkovChain < handle 
-% MARKOVCHAIN is class with all the same functions as in MarkovChainAll,
-% plus getNext and getSequence, but for single octave of notes.
-% transitionMatrix is matrix detailing transition probabilities from one
-% note to another, including itself, within chosen octave. 
+classdef MusicMarkovChain < handle
+% MUSICMARKOVCHAIN is class with series of helper function for an entire range
+% of notes. Uses transitionMatrix of note transition probabilities and noteIndex
+% mapping location in matrix to note values. 
 
     properties(SetAccess = 'public', GetAccess = 'public')
         transitionMatrix;
+        noteIndex;
     end
 
     methods(Access = 'public')
 
-        function this = MarkovChain(tmatrix)
-            this.transitionMatrix = tmatrix;
+        function this = MusicMarkovChain(varargin)
+            narginchk(2,4);
+            tmatrix = varargin{1};
+            nindex = varargin{2};
+            if nargin == 2
+                this.transitionMatrix = tmatrix;
+                this.noteIndex = nindex;
+            elseif nargin == 4
+                % Expands transition matrix to cover continuous range of
+                % values from min to max 
+                min = varargin{3};
+                max = varargin{4};                
+                [ this.transitionMatrix, this.noteIndex ] = setTransitionMatrixRange(tmatrix, nindex, min, max);
+            end
         end
 
         % Finds transition matrix after certain number of timesteps 
@@ -20,7 +32,7 @@ classdef MarkovChain < handle
         end
 
         % Finds vector final probability distribution after number of timesteps
-        function [ finalDistrib ] = probDistribution(this, numSteps, initVec)
+        function [ finalDistrib ] = finalProbDistrib(this, numSteps, initVec)
             finalDistrib = probDistribution(this.transitionMatrix, numSteps, initVec);
         end
 
@@ -29,7 +41,7 @@ classdef MarkovChain < handle
             [limVec, limMatrix] = limiting(this.transitionMatrix, numSteps);
         end
 
-        % Finds canonical form for transition matrix 
+         % Finds canonical form for transition matrix 
         function [ cTrans, tranStates, transAbsorb ] = canonicalForm(this)
             [cTrans, tranStates, transAbsorb] = canonicalForm(this.transitionMatrix);
         end
@@ -49,7 +61,7 @@ classdef MarkovChain < handle
             absorbMatrix = absorbProb(this.transitionMatrix);          
         end
 
-        % Finds expected number of steps before chain is absorbed 
+        % Finds expected number of steps before chain is absorbed
         function [ absorbed ] = absorbSteps(this)
             absorbed = absorbSteps(this.transitionMatrix); 
         end
@@ -71,16 +83,7 @@ classdef MarkovChain < handle
             featureVector = getMarkovFeatures(this.transitionMatrix);
         end
 
-        % Finds next note given starting note 
-        function nextNote = getNext(this, start)
-            nextNote = getNext(this.transitionMatrix, start); 
-        end
-        
-        % Finds sequence of notes given starting note 
-        function noteSequence = getSequence(this, start, count)
-            noteSequence = getSequence(this.transitionMatrix, start, count);
-        end
-        
     end
 end
+
 

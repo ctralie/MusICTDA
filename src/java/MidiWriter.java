@@ -25,6 +25,7 @@ public class MidiWriter {
     private MidiWriter() {
         this.PPQN = DEFAULT_PPQN;
         this.BPM = new double[1][2];
+        this.BPM[0] = new double[] {0, 100};
         this.notes = new int[0];
         this.velocities = new int[0];
         this.noteOnTimes = new long[0];
@@ -35,6 +36,10 @@ public class MidiWriter {
             midiWriter = new MidiWriter();
         }
         return midiWriter;
+    }
+
+    public int[] getNotes() {
+        return this.notes;
     }
 
     public void setNoteOnTimes(long[] onTimes) {
@@ -136,7 +141,7 @@ public class MidiWriter {
             long noteOn = this.noteOnTimes[i];
             long noteOff = this.noteOffTimes[i];
             Note n = new Note(1, 1, nn, v , noteOn, noteOff, 0, 0, this.PPQN);
-            MidiEvent[] midiEvents = n.getKeyEvents();
+            MidiEvent[] midiEvents = n.getNoteEvents();
             track.add(midiEvents[0]);
             track.add(midiEvents[1]);
         }

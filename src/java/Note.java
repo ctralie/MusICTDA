@@ -97,6 +97,22 @@ public class Note implements Comparable<Note> {
         }
     }
 
+    public MidiEvent[] getNoteEvents() {
+        try {
+            MidiMessage shortMessageOn = new ShortMessage(ShortMessage.NOTE_ON,
+                    this.channelNumber, this.getNoteNumber(), this.getVelocity());
+
+            MidiMessage shortMessageOff = new ShortMessage(ShortMessage.NOTE_OFF,
+                    this.channelNumber, this.getNoteNumber(), this.getVelocity());
+            MidiEvent midiEventOn = new MidiEvent(shortMessageOn, this.noteOnTime);
+            MidiEvent midiEventOff = new MidiEvent(shortMessageOff, this.noteOffTime);
+
+            return new MidiEvent[]{midiEventOn, midiEventOff};
+        } catch (InvalidMidiDataException e) {
+            throw new IllegalArgumentException("Error in getNoteEvents :(");
+        }
+    }
+
     @Override
     public int compareTo(Note o) {
         if (this.noteOnTime < o.noteOnTime)

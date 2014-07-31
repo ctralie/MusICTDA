@@ -25,7 +25,7 @@ for i=1:length(MidiMain)
    midimarkov = MidiMain{i}.getMidi2MarkovTranscribed;
    noteMatrix = sparse(midimarkov.getNoteTransitionMatrix(1));
    noteIndex = midimarkov.getNoteIndex;
-   mc = MarkovChain(noteMatrix, noteIndex, minrange, maxrange);
+   mc = MusicMarkovChain(noteMatrix, noteIndex, minrange, maxrange);
    featureMatrix(i,:) = mc.getMarkovFeatures;
 end
 

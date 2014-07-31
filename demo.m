@@ -12,6 +12,7 @@ midimarkov = midimain1.getMidi2Markov;
 tmatrix = midimarkov.getTemporalKeyTransitionMatrix(1, windowMicro, incrementMicro);
 % make cool video
 makeSynchronizedMCVideos(tmatrix, windowMicro, incrementMicro, 'lib/music_examples/short_sample_3.mp3', 'output.flv', 0);
+
 % create new melody from markov chain
 stmc = STMarkovChain(tmatrix);
 notes = stmc.getSTSequence(1,0);

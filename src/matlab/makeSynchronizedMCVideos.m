@@ -1,9 +1,11 @@
 function makeSynchronizedMCVideos(transitionMatrix, windowSize, increment, filename, outname, plot3D)
+%MAKESYNCHRONIZEDMCVIDEO
 
 increment = increment/1e6;
 windowSize = windowSize/1e6;
 
-featureMatrix = generateSTFeatureMatrix(transitionMatrix);
+stmc = STMarkovChain(transitionMatrix);
+featureMatrix = stmc.getMarkovFeatureMatrix;
 [Y, eigs] = cmdscale(pdist(featureMatrix));
 
 C = colormap;
@@ -40,5 +42,6 @@ setenv('PATH', [PATH ':/usr/local/bin']);
 
 system(sprintf('avconv -r %g -i syncmovie%s.png -i syncmoviesound.wav -b 65536k -r 24 %s', FramesPerSecond, '%d', outname));
 system('rm syncmovie*.png');
+system('rm syncmoviesound.wav');
 
 end
