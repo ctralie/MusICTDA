@@ -11,7 +11,7 @@ noteSequence(1,1) = start;
 for i = 2:count
     nextNote = getNext(Trans, start);
     noteSequence(1,i) = nextNote; 
-    start = nextNote; 
+    start = nextNote;
 end
 
 end

@@ -7,7 +7,7 @@ zsize = size(transitionMatrix, 3);
 featureMatrix = NaN(zsize, xsize*(ysize-1));
 
 for i=1:zsize
-    mc = MarkovChain(transitionMatrix(:,:,i), 0:11);
+    mc = MarkovChain(transitionMatrix(:,:,i));
     featureMatrix(i,:) = mc.getMarkovFeatures();
 end
 

@@ -78,7 +78,7 @@ classdef MarkovChain < handle
         
         % Finds sequence of notes given starting note 
         function noteSequence = getSequence(this, start, count)
-            noteSequence = getSequence(this.transitionMatrix, start, count)
+            noteSequence = getSequence(this.transitionMatrix, start, count);
         end
         
     end
